@@ -12,8 +12,24 @@ def all_products(request):
     # define query and categories as none to avoid error on initial page loading
     query = None
     categories = None
+    sort = None
+    direction = None
 
     if request.GET:
+        # check if sort and diection are in the GET request
+        if 'sort' in request.GET:
+            sortkey = request.GET['sort']
+            sort = sortkey
+            if sortkey == 'name':
+                sortkey = 'lower_name'
+                products = products.annotate(lower_name=Lower('name'))
+
+            if 'direction' in request.GET:
+                direction = request.GET['direction']
+                if direction == 'desc':
+                    sortkey = f'-{sortkey}'
+            products = products.order_by(sortkey)
+
         # check if category is in the GET request
         if 'category' in request.GET:
             # if exists, split into a list at the commas
@@ -37,10 +53,13 @@ def all_products(request):
             # filter the items uing the query object
             products = products.filter(queries)
 
+    current_sorting = f'{sort}_{direction}'
+
     context = {
         'products': products,
         'search_term': query,
         'current_categories': categories,
+        'current_sorting': current_sorting,
     }
 
     return render(request, 'products/products.html', context)
