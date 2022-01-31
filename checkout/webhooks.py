@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
-# from checkout.webhook_handler import StripeWH_Handler
+from checkout.webhook_handler import StripeWH_Handler
 
 import stripe
 
@@ -32,9 +32,6 @@ def webhook(request):
         return HttpResponse(status=400)
     except Exception as e:
         return HttpResponse(content=e, status=400)
-
-    print('Success')
-    return HttpRespose(status=200)
 
     # Set up a webhook handler
     handler = StripeWH_Handler(request)
