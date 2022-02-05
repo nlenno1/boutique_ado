@@ -11,6 +11,13 @@ def profile(request):
 
     profile_data = get_object_or_404(UserProfile, user=request.user)
 
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully")
+        else:
+            messages.error(request, "Update failed. Please ensure the form is valid.")
     form = UserProfileForm(instance=profile_data)
     orders = profile_data.orders.all()
 
